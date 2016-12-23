@@ -12,7 +12,7 @@ CORS(app, resources=r'/*')
 
 users_on_page = dict()
 
-gi = pygeoip.GeoIP('/Users/martinl/Documents/Docker/similarity-client/thirt_webapi/static/GeoLiteCity.dat', pygeoip.MEMORY_CACHE)
+gi = pygeoip.GeoIP('/Users/martinl/Documents/Docker/session-prediction-python-api/static/GeoLiteCity.dat', pygeoip.MEMORY_CACHE)
 
 @app.route('/html')
 def initialize_user_session():
@@ -35,7 +35,45 @@ def make_cookie(id, t, p, page_counter):
     return cookie
 
 
-def get_user_data()
+def get_user_data():
+    user_data = {}
+
+    # get ip
+
+    try:
+        # Currently request.remote_addr is overridden for work in localhost
+        # user_data['ip'] = request.remote_addr
+        user_data['ip'] = '91.146.64.107'
+    except KeyError:
+        pass
+
+    if 'ip' in user_data.keys():
+        # one time, get location
+        geo_data = gi.record_by_addr(user_data['ip'])
+        user_data['country'] = geo_data['country_name']
+        user_data['city'] = geo_data['city']
+
+    try:
+        user_data['charset'] = request.charset
+    except KeyError:
+        pass
+
+    try:
+        user_data['browser'] = request.user_agent.browser
+    except KeyError:
+        pass
+
+    try:
+        user_data['version'] = request.user_agent.version and int(request.user_agent.version.split('.')[0])
+    except KeyError:
+        pass
+
+    try:
+        user_data['platform'] = request.user_agent.platform
+    except KeyError:
+        pass
+
+    return user_data
 
 
 
@@ -50,13 +88,9 @@ def cookie_monster():
 
     if not temp_cookie:
         # first time visitor
-        ip_address = '91.146.64.107'
+        user_data = get_user_data()
 
-        # one time, get location
-        geo_data = gi.record_by_addr(ip_address)
-        country = geo_data['country_name']
-        city = geo_data['city']
-        print(country, city)
+        print(user_data)
 
         # make this !!!
         prediction_time = 100
