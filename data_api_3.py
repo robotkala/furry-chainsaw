@@ -76,6 +76,10 @@ def get_user_data():
     return user_data
 
 
+def predict_session_length(data):
+    print(data)
+    return 100
+
 
 @app.route('/make_prediction')
 def cookie_monster():
@@ -87,13 +91,11 @@ def cookie_monster():
     print('temp_cookie', temp_cookie)
 
     if not temp_cookie:
-        # first time visitor
+        # get first time visitor data
         user_data = get_user_data()
 
-        print(user_data)
-
         # make this !!!
-        prediction_time = 100
+        prediction_time = predict_session_length(user_data)
 
         ID = random.randint(0, 100000)
         T = int(time.time())
