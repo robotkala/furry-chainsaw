@@ -27,12 +27,18 @@ def second_html():
     return resp, 200
 
 
+def update_prediction(start_time, prediction):
+    current_time = int(time.time())
+    new_prediction = prediction - (current_time - start_time)
+    return new_prediction
+
+
 def predict_session_length():
 
     current_time = datetime.now()
     current_hour = str(current_time.hour)
 
-    with open('/Users/martinl/Documents/Docker/session-prediction-python-api/hour_to_sessdur_map.json', 'r') as map:
+    with open('/Users/oskarkala/Documents/session-prediction-api/hour_to_sessdur_map.json', 'r') as map:
         hour_sessdur_map = json.load(map)
 
     prediciton = hour_sessdur_map[current_hour]
@@ -40,51 +46,66 @@ def predict_session_length():
     return prediciton
 
 
+def cookie_maker(ID, page_counter, t, p):
+    cookie = str(ID) + ':' + str(page_counter) + ':' + str(t) + ':' + str(p)
+    return cookie
+
+
 @app.route('/on_load_event')
 def on_load_event():
 
     cookie = request.cookies.get('username')
 
-    with open('user_data.json', 'r') as ud:
+    with open('/Users/oskarkala/Documents/session-prediction-api/user_data.json', 'r') as ud:
         user_data = json.load(ud)
 
     if cookie:
-        for key, value in user_data[cookie][-1].items():
-            print(key,value)
+        splitted_cookie = cookie.split(sep=':')
+        #print(cookie)
+        ID = str(splitted_cookie[0])
+        page_counter = str(splitted_cookie[1])
+        t = int(time.time())
+        p = int(splitted_cookie[3])
 
-        print(value, int(time.time()))
+        #print(type(ID), type(page_counter))
 
-        time_difference = int(time.time()) - value
+        for key, value in user_data[ID][page_counter][-1].items():
+            print(key, value)
 
-        print(time_difference)
+        #print(value, int(time.time()))
 
-        if time_difference >= 1800:
-            prediction = predict_session_length()
-        else:
-            prediction = 1234
+        prediction = update_prediction(int(splitted_cookie[2]), p)
+        page_counter = str(int(splitted_cookie[1]) + 1)
+        print(page_counter)
+        user_data[ID][page_counter] = []
 
-        resp = jsonify({'user_leaving_in': prediction})
+        cookie = cookie_maker(ID=ID, page_counter=page_counter, t=t, p=prediction)
+
 
     if not cookie:
-        cookie = str(int(max(user_data.keys())) + 1)
-        user_data[cookie] = []
+        #print("no cookie")
+        ID = str(int(max(user_data.keys())) + 1)
+        t = int(time.time())
         prediction = predict_session_length()
+        page_counter = str(0)
 
-        resp = jsonify({'user_leaving_in': prediction})
+        cookie = cookie_maker(ID=ID, page_counter=page_counter, t=t, p=prediction)
 
-        resp.set_cookie('username', cookie, max_age=2700000)
-        print(cookie)
+        user_data[ID] = {page_counter: []}
 
     event = {
         'start': int(time.time())
     }
 
-    user_data[cookie].append(event)
+
+    user_data[ID][page_counter].append(event)
 
     with open('user_data.json', 'w') as ud:
         json.dump(user_data, ud)
 
+    resp = jsonify({'user_leaving_in': prediction})
     resp.headers['Cache-Control'] = 'no-cache'
+    resp.set_cookie('username', cookie, max_age=2700000)
 
     return resp
 
@@ -92,6 +113,11 @@ def on_load_event():
 @app.route('/on_unload_event')
 def on_unload_event():
     cookie = request.cookies.get('username')
+    splitted_cookie = cookie.split(sep=':')
+
+    ID = str(splitted_cookie[0])
+    page_counter = str(splitted_cookie[1])
+    print(ID, page_counter, "unload")
 
     if cookie:
         with open('user_data.json', 'r') as ud:
@@ -100,8 +126,7 @@ def on_unload_event():
         event = {
             'stop': int(time.time())
         }
-
-        user_data[cookie].append(event)
+        user_data[ID][page_counter].append(event)
 
         with open('user_data.json', 'w') as ud:
             json.dump(user_data, ud)
