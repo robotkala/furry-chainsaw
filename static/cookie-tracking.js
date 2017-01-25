@@ -1,9 +1,13 @@
 var hosturl = 'http://localhost:5000';
 
-function onLoadEvent() {
+window.onload = onLoadEvent();
+window.onload = exitIntentListener();
+window.addEventListener("beforeunload", onUnLoadEvent);
 
+function onLoadEvent() {
     var xhttp = new XMLHttpRequest();
     url = hosturl + "/on_load_event";
+    console.log(url);
     xhttp.open("GET", url, true);
     xhttp.send();
     xhttp.onreadystatechange = function () {

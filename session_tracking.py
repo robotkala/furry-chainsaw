@@ -5,7 +5,7 @@ from flask import Flask, make_response, render_template, jsonify, request
 from datetime import datetime
 from redis import Redis
 
-expiration_time = 10 # seconds
+expiration_time = 900 # seconds
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 
