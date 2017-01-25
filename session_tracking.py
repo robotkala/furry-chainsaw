@@ -5,7 +5,7 @@ from flask import Flask, make_response, render_template, jsonify, request
 from datetime import datetime
 from redis import Redis
 
-expiration_time = 900 # seconds
+expiration_time = 20 # seconds
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 
@@ -135,9 +135,10 @@ def on_unload_event(counter):
         }
         user_data[counter].append(event)
         redis.set(cookie, json.dumps(user_data))
-        print('on unload event')
+
     except AttributeError:
         pass
+
     resp = jsonify({})
     resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200
@@ -157,9 +158,9 @@ def exit_intent_event(counter):
         redis.set(cookie, json.dumps(user_data))
         redis.setex(cookie + ':visited', 1, expiration_time)
 
-        print('exit intent event')
     except AttributeError:
         pass
+
     resp = jsonify({})
     resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200

@@ -28,6 +28,10 @@ function onLoadEvent() {
             window.exp_time = JSON.parse(xhttp.responseText).exp_time;
 
             setTimeout(userLeaving, window.user_leaving_in * 1000);
+            
+             if (window.visited == 1){
+                setTimeout(setVisitedTimer, window.exp_time*1000);
+            }
         }
     };
 }
