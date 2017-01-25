@@ -63,7 +63,7 @@ def update_prediction(start_time, prediction):
 def on_load_event():
     cookie = request.cookies.get('_ga')
 
-    # if doesn't exist
+    # if _ga account doesn't have a visited key in redis DB
     if redis.exists(cookie + ':visited') == 0:
         visited = 0
         exp_time = expiration_time
@@ -75,7 +75,7 @@ def on_load_event():
         exp_time = redis.ttl(cookie + ':visited')
         print('visited, ', visited)
 
-    # if doesn't exist
+    # if _ga account doesn't exist in redis DB
     if redis.exists(cookie) == 0:
 
         prediction = make_prediction()
