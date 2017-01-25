@@ -1,12 +1,21 @@
-var hosturl = 'http://localhost:5000';
+window.onload = initialize_sess_api();
 
-window.onload = onLoadEvent();
-window.onload = exitIntentListener();
-window.addEventListener("beforeunload", onUnLoadEvent);
+function initialize_sess_api() {
+    var user_nr_from_cookie = parseInt(document.cookie.split('.')[2]);
+
+    window.hosturl = 'http://localhost:5000';
+
+    if (user_nr_from_cookie % 37 === 0) {
+        alert("ur cookie is bad");
+        onLoadEvent();
+        exitIntentListener();
+        window.addEventListener("beforeunload", onUnLoadEvent);
+    }
+}
 
 function onLoadEvent() {
     var xhttp = new XMLHttpRequest();
-    url = hosturl + "/on_load_event";
+    url = window.hosturl + "/on_load_event";
     console.log(url);
     xhttp.open("GET", url, true);
     xhttp.send();
@@ -29,7 +38,7 @@ function userLeaving() {
 
 function onUnLoadEvent() {
     var xhttp = new XMLHttpRequest();
-    url = hosturl + "/on_unload_event/" + window.tabcounter;
+    url = window.hosturl + "/on_unload_event/" + window.tabcounter;
     xhttp.open("GET", url, false);
     xhttp.send();
 }
@@ -52,7 +61,7 @@ function exitIntentListener() {
 
 function exitIntentEvent() {
     var xhttp = new XMLHttpRequest();
-    url = hosturl + "/exit_intent_event/" + window.tabcounter;
+    url = window.hosturl + "/exit_intent_event/" + window.tabcounter;
     xhttp.open("GET", url, true);
     xhttp.send();
 }
