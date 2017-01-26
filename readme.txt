@@ -5,7 +5,7 @@ Our application functional requirements:
 2. save and track their google analytics key to our redis database.
 3. follow every page load, exit intent and page leaving action of out dataset group.
 4. trigger exit intent event ( when mouse leaves the browser from the top ).
-5. predict session lenght and trigger an event if the user is predicted to leave.
+5. predict session length and trigger an event if the user is predicted to leave.
 
 
 Still to do
