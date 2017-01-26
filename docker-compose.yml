@@ -12,5 +12,6 @@ services:
   redis:
     image: "whitewizardee/redis:alpine"
     command: redis-server --appendonly yes
+    command: redis-server --save 60 5
     volumes:
-     - /backup:/data
+     - ./backup:/data
