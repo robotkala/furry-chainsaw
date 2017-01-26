@@ -6,7 +6,7 @@ Our application functional requirements:
 1. selects 2.69 % of traffic.
 2. trigger exit intent event ( when mouse leaves the browser from the top ).
 3. predict session length and trigger an event if the user is predicted to leave.
-2. save this groups every action ( page load, exit intent and page unload ( user leaving )) to redis database.
+4. save this groups every action ( page load, exit intent and page unload ( user leaving )) to redis database.
 
 Non functional requirements:
 1. this works in chrome and safari and mozilla
