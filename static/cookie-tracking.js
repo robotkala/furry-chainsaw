@@ -13,7 +13,7 @@ function initialize_sess_api() {
 
     var ga_cookie = getCookie('_ga');
 
-    var user_nr_from_cookie = parseInt(ga_cookie.split('.')[2]);
+    window.user_nr_from_cookie = parseInt(ga_cookie.split('.')[2]);
 
     if (user_nr_from_cookie % 37 === 0) {
         onLoadEvent();
@@ -52,7 +52,9 @@ function onLoadEvent() {
             window.visited = JSON.parse(xhttp.responseText).visited;
             window.exp_time = JSON.parse(xhttp.responseText).exp_time;
 
-            setTimeout(userLeaving, window.user_leaving_in * 1000);
+            if (window.user_nr_from_cookie % 2 === 0) {
+                setTimeout(userLeaving, window.user_leaving_in * 1000);
+            }
 
             if (window.visited == 1) {
                 setTimeout(setVisitedTimer, window.exp_time * 1000);
@@ -62,6 +64,7 @@ function onLoadEvent() {
 }
 
 function userLeaving() {
+
     alert("You should leave now!");
 }
 
@@ -81,9 +84,11 @@ function exitIntentListener() {
     $(document).mouseleave(function (e) {
         if (e.clientY < 0 && window.visited == 0) {
             exitIntentEvent();
-            alert("You left the window :)");
-            window.visited = 1;
-            setTimeout(setVisitedTimer, window.exp_time * 1000);
+            if (window.user_nr_from_cookie % 2 === 0) {
+                alert("You left the window :)");
+                window.visited = 1;
+                setTimeout(setVisitedTimer, window.exp_time * 1000);
+            }
         }
     });
 }
