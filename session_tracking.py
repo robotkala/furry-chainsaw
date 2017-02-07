@@ -1,5 +1,6 @@
 import json
 import time
+import os
 import pytz
 from flask import Flask, make_response, render_template, jsonify, request
 from datetime import datetime
@@ -166,6 +167,39 @@ def exit_intent_event(counter):
     return resp, 200
 
 
+@app.route('/was_supposed_to_leave/<counter>')
+def was_supposed_to_leave(counter):
+    cookie = request.cookies.get('_ga')
+    try:
+        user_data = json.loads(redis.get(cookie).decode('utf-8'))
+
+        event = {
+            'was_supposed_to_leave': int(time.time())
+        }
+        user_data[counter].append(event)
+
+        redis.set(cookie, json.dumps(user_data))
+        redis.setex(cookie + ':visited', 1, expiration_time)
+
+    except AttributeError:
+        pass
+
+    resp = jsonify({})
+    resp.headers['Cache-Control'] = 'no-cache'
+    return resp, 200
+
+
+APP_PORT = 80
+if 'APP_PORT' in os.environ:
+    APP_PORT = os.environ['APP_PORT']
+
+APP_URL_PREFIX = ''
+if 'APP_URL_PREFIX' in os.environ:
+    APP_URL_PREFIX = os.environ['APP_URL_PREFIX']
+
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0', app_port=int(APP_PORT))
+
+    #app.run(debug=True, host='0.0.0.0')
 
