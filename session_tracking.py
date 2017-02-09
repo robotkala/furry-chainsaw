@@ -189,6 +189,24 @@ def was_supposed_to_leave(counter):
     return resp, 200
 
 
+@app.route('/secret_place')
+def secret_place():
+
+    all_keys = redis.keys('*')
+
+    data = {}
+
+    for key in all_keys:
+        key = key.decode('utf-8')
+        if ':' in key:
+            continue
+        print(key)
+        data[key] = json.loads(redis.get(key).decode('utf-8'))
+
+    resp = jsonify(data)
+    return resp
+
+
 APP_PORT = 80
 if 'APP_PORT' in os.environ:
     APP_PORT = os.environ['APP_PORT']
@@ -199,7 +217,8 @@ if 'APP_URL_PREFIX' in os.environ:
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', app_port=int(APP_PORT))
+    #app.run(host='0.0.0.0', app_port=int(APP_PORT))
 
-    #app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
+
 
