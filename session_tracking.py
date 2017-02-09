@@ -200,7 +200,7 @@ def secret_place():
         key = key.decode('utf-8')
         if ':' in key:
             continue
-        print(key)
+        #print(key)
         data[key] = json.loads(redis.get(key).decode('utf-8'))
 
     resp = jsonify(data)
