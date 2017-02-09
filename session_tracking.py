@@ -217,8 +217,7 @@ if 'APP_URL_PREFIX' in os.environ:
 
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', app_port=int(APP_PORT))
-
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0', app_port=int(APP_PORT))
+    #app.run(debug=True, host='0.0.0.0')
 
 
