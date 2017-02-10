@@ -2,25 +2,27 @@ import json
 import time
 import os
 import pytz
-from flask import Flask, make_response, render_template, jsonify, request
+from flask import Flask, make_response, render_template, jsonify, request, Blueprint
 from datetime import datetime
 from redis import Redis
 
 expiration_time = 20 # seconds
-app = Flask(__name__)
-redis = Redis(host='redis', port=6379)
 
 
-@app.route('/one')
+bp = Blueprint('session-prediciton', __name__, template_folder='templates')
+
+'''
+@bp.route('/one')
 def html_page_one():
     resp = make_response(render_template('one.html'))
     return resp, 200
 
 
-@app.route('/two')
+@bp.route('/two')
 def html_page_two():
     resp = make_response(render_template('two.html'))
     return resp, 200
+'''
 
 
 def make_prediction():
@@ -60,7 +62,7 @@ def update_prediction(start_time, prediction):
     return new_prediction
 
 
-@app.route('/on_load_event')
+@bp.route('/on_load_event')
 def on_load_event():
     cookie = request.cookies.get('_ga')
 
@@ -126,7 +128,7 @@ def on_load_event():
     return resp, 200
 
 
-@app.route('/on_unload_event/<counter>')
+@bp.route('/on_unload_event/<counter>')
 def on_unload_event(counter):
     cookie = request.cookies.get('_ga')
     try:
@@ -145,7 +147,7 @@ def on_unload_event(counter):
     return resp, 200
 
 
-@app.route('/exit_intent_event/<counter>')
+@bp.route('/exit_intent_event/<counter>')
 def exit_intent_event(counter):
     cookie = request.cookies.get('_ga')
     try:
@@ -167,7 +169,7 @@ def exit_intent_event(counter):
     return resp, 200
 
 
-@app.route('/was_supposed_to_leave/<counter>')
+@bp.route('/was_supposed_to_leave/<counter>')
 def was_supposed_to_leave(counter):
     cookie = request.cookies.get('_ga')
     try:
@@ -189,7 +191,7 @@ def was_supposed_to_leave(counter):
     return resp, 200
 
 
-@app.route('/secret_place')
+@bp.route('/secret_place')
 def secret_place():
 
     all_keys = redis.keys('*')
@@ -215,6 +217,10 @@ APP_URL_PREFIX = ''
 if 'APP_URL_PREFIX' in os.environ:
     APP_URL_PREFIX = os.environ['APP_URL_PREFIX']
 
+app = Flask(__name__)
+app.register_blueprint(bp, url_prefix=APP_URL_PREFIX)
+
+redis = Redis(host='redis', port=6379)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', app_port=int(APP_PORT))

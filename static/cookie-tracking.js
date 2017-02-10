@@ -52,9 +52,9 @@ function onLoadEvent() {
             window.visited = JSON.parse(xhttp.responseText).visited;
             window.exp_time = JSON.parse(xhttp.responseText).exp_time;
 
-            if (window.user_nr_from_cookie % 2 === 0) {
-                setTimeout(userLeaving, window.user_leaving_in * 1000);
-            }
+            console.log(xhttp.responseText);
+
+            setTimeout(userLeaving, window.user_leaving_in * 1000);
 
             if (window.visited == 1) {
                 setTimeout(setVisitedTimer, window.exp_time * 1000);
@@ -65,7 +65,7 @@ function onLoadEvent() {
 
 function userLeaving() {
 
-    alert("You should leave now!");
+    wasSupposedToLeave();
 }
 
 function onUnLoadEvent() {
@@ -86,9 +86,9 @@ function exitIntentListener() {
             exitIntentEvent();
             if (window.user_nr_from_cookie % 2 === 0) {
                 alert("You left the window :)");
-                window.visited = 1;
-                setTimeout(setVisitedTimer, window.exp_time * 1000);
             }
+            window.visited = 1;
+            setTimeout(setVisitedTimer, window.exp_time * 1000);
         }
     });
 }
@@ -96,6 +96,13 @@ function exitIntentListener() {
 function exitIntentEvent() {
     var xhttp = new XMLHttpRequest();
     url = window.hosturl + "/exit_intent_event/" + window.tabcounter;
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
+function wasSupposedToLeave() {
+    var xhttp = new XMLHttpRequest();
+    url = window.hosturl + "/was_supposed_to_leave/" + window.tabcounter;
     xhttp.open("GET", url, true);
     xhttp.send();
 }

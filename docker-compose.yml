@@ -1,13 +1,13 @@
 version: '2'
 services:
   web:
-    build: .
+    image: "whitewizardee/sessionpredictionapi_web:v3"
     ports:
      - "5000:5000"
     environment:
      - PYTHONUNBUFFERED=0
-    volumes:
-     - .:/code
+     - APP_URL_PREFIX=localhost
+     - APP_PORT=5000
 
   redis:
     image: "whitewizardee/redis:alpine"
@@ -15,3 +15,4 @@ services:
     command: redis-server --save 60 5
     volumes:
      - ./backup:/data
+
