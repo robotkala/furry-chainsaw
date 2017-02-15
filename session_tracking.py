@@ -3,11 +3,11 @@ import time
 import os
 import pytz
 from flask import Flask, make_response, render_template, jsonify, request, Blueprint
+from flask_cors import CORS
 from datetime import datetime
 from redis import Redis
 
-expiration_time = 20 # seconds
-
+expiration_time = 600 # seconds
 
 bp = Blueprint('session-prediciton', __name__, template_folder='templates')
 
@@ -70,13 +70,13 @@ def on_load_event():
     if redis.exists(cookie + ':visited') == 0:
         visited = 0
         exp_time = expiration_time
-        print('visited, ', visited)
+        #print('visited, ', visited)
 
     # if exists
     else:
         visited = 1
         exp_time = redis.ttl(cookie + ':visited')
-        print('visited, ', visited)
+        #print('visited, ', visited)
 
     # if _ga account doesn't exist in redis DB
     if redis.exists(cookie) == 0:
@@ -202,7 +202,6 @@ def secret_place():
         key = key.decode('utf-8')
         if ':' in key:
             continue
-        #print(key)
         data[key] = json.loads(redis.get(key).decode('utf-8'))
 
     resp = jsonify(data)
@@ -219,6 +218,7 @@ if 'APP_URL_PREFIX' in os.environ:
 
 app = Flask(__name__)
 app.register_blueprint(bp, url_prefix=APP_URL_PREFIX)
+CORS(app, resources=r'/*')
 
 redis = Redis(host='redis', port=6379)
 
