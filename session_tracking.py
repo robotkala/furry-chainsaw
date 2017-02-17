@@ -124,7 +124,6 @@ def on_load_event():
         redis.set(cookie + ':prediction', prediction)
 
     resp = jsonify({'user_leaving_in': prediction, 'counter': counter, 'visited': visited, 'exp_time': exp_time})
-    resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200
 
 
@@ -143,7 +142,6 @@ def on_unload_event(counter):
         pass
 
     resp = jsonify({})
-    resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200
 
 
@@ -165,7 +163,6 @@ def exit_intent_event(counter):
         pass
 
     resp = jsonify({})
-    resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200
 
 
@@ -187,7 +184,6 @@ def was_supposed_to_leave(counter):
         pass
 
     resp = jsonify({})
-    resp.headers['Cache-Control'] = 'no-cache'
     return resp, 200
 
 
@@ -207,6 +203,10 @@ def secret_place():
     resp = jsonify(data)
     return resp
 
+@bp.after_request
+def add_header(response):
+    response.cache_control.max_age = 0
+    return
 
 APP_PORT = 80
 if 'APP_PORT' in os.environ:
