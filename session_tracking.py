@@ -203,10 +203,11 @@ def secret_place():
     resp = jsonify(data)
     return resp
 
+
 @bp.after_request
 def add_header(response):
     response.cache_control.max_age = 0
-    return
+    return response
 
 APP_PORT = 80
 if 'APP_PORT' in os.environ:
