@@ -220,8 +220,7 @@ if 'APP_URL_PREFIX' in os.environ:
 app = Flask(__name__)
 app.register_blueprint(bp, url_prefix=APP_URL_PREFIX)
 
-CORS(app, resources=r'*', supports_credentials=True)
-#CORS(app, resources={r"/*": {"origins": "http://localhost:port"}})
+CORS(app, resources=r'/*', supports_credentials=True)
 
 redis = Redis(host='redis', port=6379)
 
