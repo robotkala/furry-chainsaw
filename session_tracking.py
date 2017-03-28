@@ -94,8 +94,9 @@ def on_load_event():
         }
         try:
             user_data[counter].append(event)
-        except KeyError:
+        except Exception as e:
             print('cookie:', cookie)
+            print(str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.set(cookie + ':prediction', prediction)
@@ -140,8 +141,9 @@ def on_unload_event(counter):
         }
         try:
             user_data[counter].append(event)
-        except KeyError:
+        except Exception as e:
             print('cookie:', cookie)
+            print(str(e))
         redis.set(cookie, json.dumps(user_data))
 
     except AttributeError:
@@ -162,8 +164,9 @@ def exit_intent_event(counter):
         }
         try:
             user_data[counter].append(event)
-        except KeyError:
+        except Exception as e:
             print('cookie:', cookie)
+            print(str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.setex(cookie + ':visited', 1, expiration_time)
@@ -186,8 +189,9 @@ def was_supposed_to_leave(counter):
         }
         try:
             user_data[counter].append(event)
-        except KeyError:
+        except Exception as e:
             print('cookie:', cookie)
+            print(str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.setex(cookie + ':visited', 1, expiration_time)
