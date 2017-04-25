@@ -65,6 +65,9 @@ def update_prediction(start_time, prediction):
 @bp.route('/on_load_event')
 def on_load_event():
     cookie = request.cookies.get('_ga')
+    if cookie is None:
+        resp = jsonify({'error': 'no cookie'})
+        return resp, 400
 
     # if _ga account doesn't have a visited key in redis DB
     if redis.exists(cookie + ':visited') == 0:
@@ -130,6 +133,9 @@ def on_load_event():
 @bp.route('/on_unload_event/<counter>')
 def on_unload_event(counter):
     cookie = request.cookies.get('_ga')
+    if cookie is None:
+        resp = jsonify({'error': 'no cookie'})
+        return resp, 400
     try:
         user_data = json.loads(redis.get(cookie).decode('utf-8'))
         event = {
@@ -148,6 +154,9 @@ def on_unload_event(counter):
 @bp.route('/exit_intent_event/<counter>')
 def exit_intent_event(counter):
     cookie = request.cookies.get('_ga')
+    if cookie is None:
+        resp = jsonify({'error': 'no cookie'})
+        return resp, 400
     try:
         user_data = json.loads(redis.get(cookie).decode('utf-8'))
 
@@ -169,6 +178,9 @@ def exit_intent_event(counter):
 @bp.route('/was_supposed_to_leave/<counter>')
 def was_supposed_to_leave(counter):
     cookie = request.cookies.get('_ga')
+    if cookie is None:
+        resp = jsonify({'error': 'no cookie'})
+        return resp, 400
     try:
         user_data = json.loads(redis.get(cookie).decode('utf-8'))
 
