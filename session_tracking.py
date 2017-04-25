@@ -95,7 +95,11 @@ def on_load_event():
         event = {
             'start': int(time.time())
         }
-        user_data[counter].append(event)
+        try:
+            user_data[counter].append(event)
+        except Exception as e:
+            print('cookie:', cookie)
+            print('on_load_event/', str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.set(cookie + ':prediction', prediction)
@@ -141,7 +145,12 @@ def on_unload_event(counter):
         event = {
             'stop': int(time.time())
         }
-        user_data[counter].append(event)
+        try:
+            user_data[counter].append(event)
+        except Exception as e:
+            print('cookie:', cookie)
+            print('on_unload_event/', str(e))
+
         redis.set(cookie, json.dumps(user_data))
 
     except AttributeError:
@@ -163,7 +172,11 @@ def exit_intent_event(counter):
         event = {
             'exit_intent': int(time.time())
         }
-        user_data[counter].append(event)
+        try:
+            user_data[counter].append(event)
+        except Exception as e:
+            print('cookie:', cookie)
+            print('exit_intent_event/', str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.setex(cookie + ':visited', 1, expiration_time)
@@ -187,7 +200,11 @@ def was_supposed_to_leave(counter):
         event = {
             'was_supposed_to_leave': int(time.time())
         }
-        user_data[counter].append(event)
+        try:
+            user_data[counter].append(event)
+        except Exception as e:
+            print('cookie:', cookie)
+            print('was_supposed_to_leave/', str(e))
 
         redis.set(cookie, json.dumps(user_data))
         redis.setex(cookie + ':visited', 1, expiration_time)
@@ -231,7 +248,8 @@ if 'APP_URL_PREFIX' in os.environ:
 
 app = Flask(__name__)
 app.register_blueprint(bp, url_prefix=APP_URL_PREFIX)
-CORS(app, resources=r'/*')
+
+CORS(app, resources=r'/*', supports_credentials=True)
 
 redis = Redis(host='redis', port=6379)
 
